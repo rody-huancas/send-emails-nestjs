@@ -53,7 +53,7 @@ export class SmtpConfig {
 export class SendEmailDto {
   @IsObject({ message: 'Las opciones de correo deben ser un objeto' })
   @IsNotEmpty({ message: 'Las opciones de correo son obligatorias' })
-  mailOptions: MailOptions;
+  emailOptions: MailOptions;
 
   @IsObject({ message: 'La configuración SMTP debe ser un objeto' })
   @IsNotEmpty({ message: 'La configuración SMTP es obligatoria' })
