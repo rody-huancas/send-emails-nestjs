@@ -1,4 +1,5 @@
-import { IsBoolean, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsBoolean, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, Validate, ValidateNested } from 'class-validator';
 
 export class MailOptions {
   @IsString({ message: 'El remitente debe ser una cadena de texto' })
@@ -53,9 +54,13 @@ export class SmtpConfig {
 export class SendEmailDto {
   @IsObject({ message: 'Las opciones de correo deben ser un objeto' })
   @IsNotEmpty({ message: 'Las opciones de correo son obligatorias' })
+  @ValidateNested({ message: 'Las opciones de correo no son válidas' })
+  @Type(() => MailOptions)
   emailOptions: MailOptions;
 
   @IsObject({ message: 'La configuración SMTP debe ser un objeto' })
   @IsNotEmpty({ message: 'La configuración SMTP es obligatoria' })
+  @ValidateNested({ message: 'La configuración SMTP no es válida' })
+  @Type(() => SmtpConfig)
   smtpConfig: SmtpConfig;
 }
