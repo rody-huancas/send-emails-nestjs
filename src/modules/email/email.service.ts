@@ -15,8 +15,8 @@ export class EmailService {
     try {
       this.emailQueue.add('send-email', { smtpConfig, emailOptions }, {
         attempts: 3,
-        backoff: {
-          type: 'exponential',
+        backoff : {
+          type : 'exponential',
           delay: 5000,
         },
       });
