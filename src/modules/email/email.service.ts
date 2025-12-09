@@ -21,6 +21,7 @@ export class EmailService {
         },
       });
 
+      return { message: 'Correo enviado correctamente.' };
     } catch (error) {
       throw new Error(`Error al enviar el email desde el servicio: ${error.message}`);
     }
