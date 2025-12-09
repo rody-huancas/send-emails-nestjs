@@ -15,7 +15,7 @@ import { EmailController } from './email.controller';
       }
     }),
     BullModule.registerQueue({
-      name: 'email-queue',
+      name: 'email-queue'
     }),
   ],
   providers  : [EmailService, EmailProcessor],
