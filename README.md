@@ -1,99 +1,293 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 📧 Send Emails NestJS
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Sistema de envío de correos electrónicos desarrollado con NestJS, Bull (colas de trabajos), Redis y Nodemailer. Incluye procesamiento asíncrono de emails, validación de contenido HTML, tareas programadas con Cron y reintentos automáticos.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 📋 Características
 
-## Description
+- ✉️ **Envío asíncrono de emails** usando Bull Queues y Redis
+- 🔒 **Sanitización de HTML** para prevenir inyección de código malicioso
+- 🔄 **Reintentos automáticos** con estrategia exponencial (3 intentos)
+- ⏰ **Cron Jobs** para envío programado de correos
+- ✅ **Validación de DTOs** con class-validator
+- 🛡️ **Configuración segura** con variables de entorno y validación con Zod
+- 🎨 **Plantillas HTML** personalizables para emails
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🚀 Tecnologías
 
-## Project setup
+- [NestJS](https://nestjs.com/) - Framework de Node.js
+- [Bull](https://github.com/OptimalBits/bull) - Sistema de colas basado en Redis
+- [Redis](https://redis.io/) - Base de datos en memoria para colas
+- [Nodemailer](https://nodemailer.com/) - Envío de emails
+- [TypeScript](https://www.typescriptlang.org/) - Lenguaje de programación
+- [Zod](https://zod.dev/) - Validación de esquemas
+- [pnpm](https://pnpm.io/) - Gestor de paquetes
 
-```bash
-$ pnpm install
-```
+## 📦 Requisitos Previos
 
-## Compile and run the project
+- Node.js >= 20.x
+- pnpm >= 8.x
+- Docker y Docker Compose (para Redis)
+
+## 🔧 Instalación
+
+### 1. Clonar el repositorio
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+git clone https://github.com/rody-huancas/send-emails-nestjs
+cd send-emails-nestjs
 ```
 
-## Run tests
+### 2. Instalar dependencias
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+pnpm install
 ```
 
-## Deployment
+### 3. Configurar variables de entorno
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Crear un archivo `.env` en la raíz del proyecto:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+```env
+# Configuración del servidor
+PORT=3000
+
+# Configuración de Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=
+
+# Configuración SMTP (ejemplo con Gmail)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=tu-email@gmail.com
+SMTP_PASS=tu-contraseña-de-aplicacion
+EMAIL_FROM=tu-email@gmail.com
+EMAIL_TO=destinatario@ejemplo.com
+```
+
+> **Nota para Gmail:** Debes generar una [contraseña de aplicación](https://support.google.com/accounts/answer/185833) para usar en `SMTP_PASS`.
+
+### 4. Iniciar Redis con Docker
 
 ```bash
-$ pnpm install -g mau
-$ mau deploy
+docker run -d --name redis-emails -p 6379:6379 redis:alpine
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+O usando Docker Compose, crea un archivo `docker-compose.yml`:
 
-## Resources
+```yaml
+version: '3.8'
 
-Check out a few resources that may come in handy when working with NestJS:
+services:
+  redis:
+    image: redis:alpine
+    container_name: redis-emails
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+volumes:
+  redis-data:
+```
 
-## Support
+Luego ejecuta:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+docker-compose up -d
+```
 
-## Stay in touch
+## ▶️ Ejecución
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Modo desarrollo
 
-## License
+```bash
+pnpm run start:dev
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### Modo producción
+
+```bash
+# Compilar el proyecto
+pnpm run build
+
+# Ejecutar en producción
+pnpm run start:prod
+```
+
+## 📚 Uso de la API
+
+### Endpoint: Enviar Email
+
+**POST** `/api/email/send`
+
+**Request Body:**
+
+```json
+{
+  "emailOptions": {
+    "from": "remitente@ejemplo.com",
+    "to": "destinatario@ejemplo.com",
+    "subject": "Asunto del correo",
+    "html": "<h1>Hola</h1><p>Este es un correo de prueba</p>"
+  },
+  "smtpConfig": {
+    "host": "smtp.gmail.com",
+    "port": 587,
+    "secure": false,
+    "auth": {
+      "user": "tu-email@gmail.com",
+      "pass": "tu-contraseña"
+    }
+  }
+}
+```
+
+**Response:**
+
+```json
+{
+  "message": "Correo enviado correctamente."
+}
+```
+
+### Ejemplo con cURL
+
+```bash
+curl -X POST http://localhost:3000/api/email/send \
+  -H "Content-Type: application/json" \
+  -d '{
+    "emailOptions": {
+      "from": "test@ejemplo.com",
+      "to": "destinatario@ejemplo.com",
+      "subject": "Test Email",
+      "html": "<h1>Hola mundo</h1>"
+    },
+    "smtpConfig": {
+      "host": "smtp.gmail.com",
+      "port": 587,
+      "secure": false,
+      "auth": {
+        "user": "tu-email@gmail.com",
+        "pass": "tu-contraseña"
+      }
+    }
+  }'
+```
+
+## 🏗️ Arquitectura del Proyecto
+
+```
+src/
+├── app.module.ts                 # Módulo principal
+├── main.ts                       # Punto de entrada de la aplicación
+├── common/
+│   └── dtos/
+│       ├── send-email.dto.ts    # DTOs para validación de emails
+│       └── index.ts
+├── config/
+│   ├── envs.ts                  # Configuración y validación de variables de entorno
+│   ├── nodemailer.ts            # Configuración de Nodemailer
+│   └── index.ts
+└── modules/
+    ├── cron/
+    │   ├── cron.module.ts       # Módulo de tareas programadas
+    │   └── cron.service.ts      # Servicio con Cron Jobs
+    └── email/
+        ├── email.controller.ts   # Controlador de endpoints
+        ├── email.module.ts       # Módulo de emails con Bull Queue
+        ├── email.processor.ts    # Procesador de cola de emails
+        └── email.service.ts      # Servicio de lógica de negocio
+```
+
+## 🔒 Seguridad
+
+- **Sanitización HTML:** El contenido HTML de los emails es sanitizado usando `sanitize-html` para prevenir inyección de código malicioso
+- **Validación de entrada:** Todos los datos son validados con `class-validator` y DTOs
+- **Variables de entorno:** Configuración sensible mediante variables de entorno validadas con Zod
+- **Reintentos controlados:** Sistema de reintentos con backoff exponencial para evitar saturación
+
+## ⏰ Tareas Programadas (Cron)
+
+El proyecto incluye un servicio Cron que envía emails automáticamente cada minuto (configurable):
+
+```typescript
+@Cron(CronExpression.EVERY_MINUTE, {
+  name: 'text-email',
+})
+```
+
+Puedes modificar la expresión cron en `src/modules/cron/cron.service.ts` según tus necesidades.
+
+## 🧪 Testing
+
+```bash
+# Tests unitarios
+pnpm run test
+
+# Tests e2e
+pnpm run test:e2e
+
+# Cobertura de tests
+pnpm run test:cov
+```
+
+## 📝 Scripts Disponibles
+
+```bash
+pnpm run start          # Iniciar en modo normal
+pnpm run start:dev      # Iniciar en modo desarrollo (watch)
+pnpm run start:debug    # Iniciar en modo debug
+pnpm run start:prod     # Iniciar en modo producción
+pnpm run build          # Compilar el proyecto
+pnpm run lint           # Ejecutar ESLint
+pnpm run format         # Formatear código con Prettier
+```
+
+## 🐳 Docker
+
+### Detener Redis
+
+```bash
+docker stop redis-emails
+```
+
+### Eliminar contenedor Redis
+
+```bash
+docker rm redis-emails
+```
+
+### Ver logs de Redis
+
+```bash
+docker logs redis-emails
+```
+
+## 🤝 Contribución
+
+Las contribuciones son bienvenidas. Por favor:
+
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT.
+
+## 👤 Autor
+
+**Rody Huancas**
+
+- GitHub: [@rody-huancas](https://github.com/rody-huancas)
+
+## 🙏 Agradecimientos
+
+- [NestJS](https://nestjs.com/) - Por el increíble framework
+- [Bull](https://github.com/OptimalBits/bull) - Por el sistema de colas
+- Comunidad de código abierto
